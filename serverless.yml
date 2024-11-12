@@ -1,0 +1,58 @@
+service: qsh
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: us-east-1
+  runtime: python3.12
+  logRetentionInDays: 7
+  versionFunctions: false
+
+  httpApi:
+    cors: true
+    metrics: true
+
+package:
+  patterns:
+    - "!./**"
+    - "./handler.py"
+    - "./qsh/**"
+
+functions:
+  readql:
+    image: readql
+    timeout: 10
+    memorySize: 256
+    events:
+      - httpApi:
+          method: GET
+          path: "/{proxy+}"
+    environment:
+      READQL_S3_BUCKET_NAME: ${self:resources.Resources.bucket.Properties.BucketName}
+
+  s3guard:
+    handler: handler.s3guard
+    timeout: 10
+    memorySize: 128
+    events:
+      - s3:
+          bucket: ${self:resources.Resources.bucket.Properties.BucketName}
+          event: "s3:ObjectCreated:*"
+          existing: true
+          forceDeploy: true
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    noDeploy:
+      - boto3
+      - botocore
+
+resources:
+  Resources:
+    bucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: readql
