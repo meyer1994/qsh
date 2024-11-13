@@ -41,8 +41,6 @@ htmlcov/
 .pytest_cache/
 .mypy_cache/
 
-# Poetry
-poetry.lock
 
 # CDK
 cdk.out/
