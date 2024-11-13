@@ -1701,6 +1701,21 @@ mypyc = ["setuptools (>=50)"]
 reports = ["lxml"]
 
 [[package]]
+name = "mypy-boto3"
+version = "1.35.59"
+description = "Type annotations for boto3 1.35.59 master module generated with mypy-boto3-builder 8.2.1"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "mypy_boto3-1.35.59-py3-none-any.whl", hash = "sha256:02142e1db4336d6895a717c9695612ef3e2ecdf3ebb6a6ef9d61bdad01c57dbc"},
+    {file = "mypy_boto3-1.35.59.tar.gz", hash = "sha256:682702d8e99e3ab99426e958243a98bb43a13f4f27fdf276c120d461fd9ca188"},
+]
+
+[package.dependencies]
+boto3 = "*"
+typing-extensions = {version = ">=4.1.0", markers = "python_version < \"3.12\""}
+
+[[package]]
 name = "mypy-boto3-apigateway"
 version = "1.35.25"
 description = "Type annotations for boto3.APIGateway 1.35.25 service generated with mypy-boto3-builder 8.1.2"
@@ -2944,4 +2959,4 @@ test = ["pytest (>=6.0.0)", "setuptools (>=65)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "da059344253710351b00d162598e4939864bb70c111ded6d8014d08a2c11c9d5"
+content-hash = "36a30fcd5b0d748c08d4a7f27c2f41d20c156d33fd44e0ea4319ade4cff1aeef"
