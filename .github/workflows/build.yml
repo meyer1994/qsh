@@ -65,4 +65,4 @@ jobs:
     - name: Build and deploy
       run: |
         make build
-        poetry run sam deploy
+        poetry run sam deploy --no-confirm-changeset
