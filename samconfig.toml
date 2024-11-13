@@ -8,12 +8,9 @@ s3_prefix = "qsh"
 region = "us-east-1"
 confirm_changeset = true
 resolve_s3 = true
+capabilities = "CAPABILITY_IAM"
 
 [default.build]
 [default.build.parameters]
 cached = true
 parallel = true
-
-[default.sync]
-[default.sync.parameters]
-watch = true
