@@ -18,8 +18,7 @@ aws-cdk-lib = "^2.0.0"
 constructs = "^10.0.0"
 ruff = "^0.3.0"
 mypy = "^1.8.0"
-types-openai = "^1.0.0"
-types-requests = "^2.31.0"
+aws-sam-cli = "^1.128.0"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,0 +1,19 @@
+version = 0.1
+
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "qsh"
+s3_prefix = "qsh"
+region = "us-east-1"
+confirm_changeset = true
+resolve_s3 = true
+
+[default.build]
+[default.build.parameters]
+cached = true
+parallel = true
+
+[default.sync]
+[default.sync.parameters]
+watch = true
