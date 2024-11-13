@@ -1,0 +1,59 @@
+{
+    // Python settings
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+
+    // Ruff settings
+    "ruff.enable": true,
+    "ruff.organizeImports": true,
+    "ruff.fixAll": true,
+    "[python]": {
+        "editor.formatOnSave": true,
+        "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "explicit",
+            "source.organizeImports.ruff": "explicit"
+        },
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    },
+
+    // Ruff specific rules
+    "ruff.lint.select": [
+        "E",   // pycodestyle errors
+        "F",   // pyflakes
+        "I",   // isort
+        "N",   // pep8-naming
+        "UP",  // pyupgrade
+        "B",   // flake8-bugbear
+        "C4",  // flake8-comprehensions
+        "DTZ", // flake8-datetimez
+        "RUF", // ruff-specific rules
+        "W",   // pycodestyle warnings
+        "TCH"  // type-checking
+    ],
+
+    // Additional editor settings
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "editor.rulers": [88],  // Black's default line length
+
+    // Exclude directories from file watching
+    "files.watcherExclude": {
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/.venv/**": true,
+        "**/__pycache__/**": true,
+        "**/node_modules/**": true,
+        "**/.pytest_cache/**": true,
+        "**/.mypy_cache/**": true,
+        "**/.ruff_cache/**": true
+    },
+
+    // Mypy settings
+    "python.analysis.typeCheckingMode": "basic",
+    "mypy.enabled": true,
+    "mypy.runUsingActiveInterpreter": true,
+    "mypy.configFile": "pyproject.toml",
+
+    // Update Python linting settings
+    "python.linting.enabled": true,
+    "python.linting.mypyEnabled": true
+}

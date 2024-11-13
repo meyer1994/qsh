@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install poetry
+      run: pipx install poetry
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'poetry'
+
+    - name: Install dependencies
+      run: poetry install -vvv
+
+    - name: Run linter
+      run: poetry run ruff check .
+
+    - name: Run type checker
+      run: poetry run mypy .
+
+    - name: Build package
+      run: make build
