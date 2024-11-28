@@ -6,6 +6,7 @@ version = 0.1
 stack_name = "qsh"
 s3_prefix = "qsh"
 region = "us-east-1"
+resolve_s3 = true
 capabilities = "CAPABILITY_IAM"
 
 [default.build]
