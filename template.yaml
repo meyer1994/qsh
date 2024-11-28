@@ -22,13 +22,7 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
-            Cors:
-              AllowMethods: "'*'"
-              AllowHeaders: "'*'"
-              AllowOrigin: "'*'"
-              MaxAge: "'600'"
-      Layers:
-        - !Ref DependenciesLayer
+            ApiId: !Ref HttpApi
 
   DependenciesLayer:
     Type: AWS::Serverless::LayerVersion
@@ -39,6 +33,22 @@ Resources:
       CompatibleRuntimes:
         - python3.12
       RetentionPolicy: Retain
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      CorsConfiguration:
+        AllowMethods:
+          - GET
+          - POST
+          - PUT
+          - DELETE
+          - OPTIONS
+        AllowHeaders:
+          - '*'
+        AllowOrigins:
+          - '*'
+        MaxAge: 600
 
 Outputs:
   ApiUrl:
