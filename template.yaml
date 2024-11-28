@@ -22,6 +22,11 @@ Resources:
           Properties:
             Path: /{proxy+}
             Method: ANY
+            Cors:
+              AllowMethods: "'*'"
+              AllowHeaders: "'*'"
+              AllowOrigin: "'*'"
+              MaxAge: "'600'"
       Layers:
         - !Ref DependenciesLayer
 
