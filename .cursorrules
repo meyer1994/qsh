@@ -1,0 +1,17 @@
+# Objective
+
+You will create a service that does the following:
+
+```bash
+echo 'a small python program' | curl 'qsh.io' > out.py
+```
+
+# Project guidelines
+
+- You will write the code in Python
+- You will deploy on AWS lambdas
+- You will use AWS CDK (Typescript)
+- You will use FastAPI for HTTP
+- You will use Mangum for ASGI adapter
+- You will use AWS Lambda Powertools for logging, metrics, tracing and idempotency
+- You will use OpenAI for the LLM generating the program

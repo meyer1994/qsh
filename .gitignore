@@ -1,0 +1,48 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environment
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# AWS CDK output and context
+cdk.out/
+cdk.context.json
+
+# Node modules if AWS CDK uses Node.js assets
+node_modules/
+
+# Logs and local config
+*.log
+*.local
+
+# IDE / Editor directories and files
+.vscode/
+.idea/ 
