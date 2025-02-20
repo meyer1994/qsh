@@ -15,3 +15,5 @@ echo 'a small python program' | curl 'qsh.io' > out.py
 - You will use Mangum for ASGI adapter
 - You will use AWS Lambda Powertools for logging, metrics, tracing and idempotency
 - You will use OpenAI for the LLM generating the program
+- You use UV as the python management tool
+
