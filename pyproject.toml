@@ -11,7 +11,6 @@ dependencies = [
     "openai>=1.63.2",
     "pydantic-settings>=2.7.1",
     "python-multipart>=0.0.20",
-    "types-boto3[dynamodb]>=1.36.24",
 ]
 
 [dependency-groups]
