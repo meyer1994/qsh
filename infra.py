@@ -10,6 +10,7 @@ from aws_cdk import (
     aws_s3 as s3,
     aws_iam as iam,
     aws_certificatemanager as acm,
+    aws_logs as logs,
 )
 
 
@@ -34,15 +35,31 @@ class QSH(Stack):
             self,
             "function",
             function_name="qsh-function",
-            runtime=lambda_.Runtime.PYTHON_3_13,
-            code=lambda_.Code.from_asset("./package.zip"),
+            description="Calls OpenAI, caches responses and returns the result",
+            # code
             handler="handler.handler",
+            code=lambda_.Code.from_asset("./package.zip"),
+            # runtime
             memory_size=128,
+            runtime=lambda_.Runtime.PYTHON_3_13,
             timeout=Duration.seconds(15),
+            # debugging
+            profiling=True,
+            tracing=lambda_.Tracing.ACTIVE,
+            # logging
+            log_group=logs.LogGroup(
+                self,
+                "qsh-logs-function",
+                log_group_name="qsh-logs-function",
+                removal_policy=RemovalPolicy.DESTROY,
+                retention=logs.RetentionDays.THREE_DAYS,
+            ),
+            # environment
             environment={
                 "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
                 "S3_BUCKET_NAME": bucket.bucket_name,
             },
+            # policies
             initial_policy=[
                 iam.PolicyStatement(
                     actions=["s3:PutObject", "s3:GetObject"],
@@ -55,21 +72,52 @@ class QSH(Stack):
             self,
             "qsh-api",
             rest_api_name="qsh-api",
+            description="API Gateway for qsh",
             handler=function,  # type: ignore
+            # proxy
             proxy=False,
-            deploy=True,
-            retain_deployments=False,
-            cloud_watch_role=True,
-            cloud_watch_role_removal_policy=RemovalPolicy.DESTROY,
+            # auth
             default_method_options=apigateway.MethodOptions(
                 authorization_type=apigateway.AuthorizationType.NONE,
             ),
+            # logging
+            cloud_watch_role=True,
+            cloud_watch_role_removal_policy=RemovalPolicy.DESTROY,
+            # deploy
+            deploy=True,
+            retain_deployments=False,
             deploy_options=apigateway.StageOptions(
                 stage_name="v0",
+                description="The main stage of the API",
+                # debugging
                 metrics_enabled=True,
                 tracing_enabled=True,
                 data_trace_enabled=True,
+                # limits
+                throttling_rate_limit=100,
+                throttling_burst_limit=100,
+                # logging
                 logging_level=apigateway.MethodLoggingLevel.INFO,
+                access_log_destination=apigateway.LogGroupLogDestination(
+                    logs.LogGroup(
+                        self,
+                        "qsh-logs-api",
+                        log_group_name="qsh-logs-api",
+                        removal_policy=RemovalPolicy.DESTROY,
+                        retention=logs.RetentionDays.THREE_DAYS,
+                    )
+                ),  # type: ignore
+                access_log_format=apigateway.AccessLogFormat.json_with_standard_fields(
+                    caller=True,
+                    http_method=True,
+                    ip=True,
+                    protocol=True,
+                    request_time=True,
+                    resource_path=True,
+                    response_length=True,
+                    status=True,
+                    user=True,
+                ),
             ),
         )
 
