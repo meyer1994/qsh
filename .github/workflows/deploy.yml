@@ -27,6 +27,7 @@ jobs:
 
       - run: uv sync --verbose
 
+      - run: uv run mypy . -v
       - run: uv run python -m unittest -vb test_handler.py
 
       - uses: aws-actions/configure-aws-credentials@v4

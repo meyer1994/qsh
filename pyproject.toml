@@ -16,6 +16,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "aws-cdk-lib>=2.179.0",
+    "mypy>=1.15.0",
     "ruff>=0.9.6",
     "uvicorn>=0.34.0",
 ]
