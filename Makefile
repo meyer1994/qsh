@@ -1,4 +1,4 @@
-.PHONY: clean deploy
+.PHONY: clean deploy destroy
 
 
 clean:
@@ -31,3 +31,7 @@ package.zip: requirements.txt
 
 deploy: package.zip
 	npx aws-cdk deploy --verbose
+
+
+destroy: package.zip
+	npx aws-cdk destroy --verbose --force --all

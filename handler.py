@@ -1,33 +1,40 @@
 from dataclasses import dataclass
+import json
+import logging
 from typing import Annotated
 
-from aws_lambda_powertools import Logger, Metrics, Tracer
 from fastapi import Depends, FastAPI, File
 from fastapi.responses import PlainTextResponse
+import hishel
 from mangum import Mangum
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+app = FastAPI(title="qsh", root_path="/prod")
+
 
 class Config(BaseSettings):
     OPENAI_API_KEY: str
+    S3_BUCKET_NAME: str
 
 
-logger = Logger(service="qsh-service")
-metrics = Metrics(namespace="qsh")
-tracer = Tracer(service="qsh-service")
-
-app = FastAPI(title="QSH Service")
-
-
-async def dep_config() -> Config:
+def dep_config() -> Config:
     return Config()  # type: ignore
 
 
-async def dep_openai(cfg: Annotated[Config, Depends(dep_config)]) -> AsyncOpenAI:
-    return AsyncOpenAI(api_key=cfg.OPENAI_API_KEY)
+async def dep_openai(cfg: Annotated[Config, Depends(dep_config)]):
+    controller = hishel.Controller(cacheable_methods=["POST"], force_cache=True)
+    storage = hishel.AsyncS3Storage(bucket_name=cfg.S3_BUCKET_NAME)
+    client = hishel.AsyncCacheClient(storage=storage, controller=controller)
+    openai = AsyncOpenAI(api_key=cfg.OPENAI_API_KEY, http_client=client)
+
+    async with client, openai:
+        yield openai
 
 
 @dataclass
@@ -38,20 +45,17 @@ class Context:
 
 
 class Result(BaseModel):
-    reasoning: Annotated[
-        str, Field(description="The reasoning behind the program. At most 15 words")
-    ]
+    reasoning: Annotated[str, Field(description="The reasoning. At most 15 words")]
     program: Annotated[str, Field(description="The generated program")]
 
 
 @app.post("/", response_class=PlainTextResponse)
-@tracer.capture_method
 async def post(ctx: Annotated[Context, Depends(Context)]) -> str:
-    prompt_user: str = ctx.user.decode("utf-8")
-    prompt_system: str = ctx.system.decode("utf-8")
+    prompt_user = ctx.user.decode()
+    prompt_system = ctx.system.decode()
 
-    logger.info(f"Received prompt: {prompt_user}")
-    logger.info(f"Received system: {prompt_system}")
+    logger.info("Received prompt: %s", prompt_user)
+    logger.info("Received system: %s", prompt_system)
 
     messages: list[ChatCompletionMessageParam] = [
         {"role": "system", "content": prompt_system},
@@ -71,12 +75,16 @@ async def post(ctx: Annotated[Context, Depends(Context)]) -> str:
     )
 
     result = response.choices[0].message.parsed
-    assert result is not None
+    assert result is not None, "No result from OpenAI"
 
     logger.info("Generated program successfully")
-    logger.info("Reasoning: %s", result.reasoning)
+    logger.debug("Reasoning: %s", result.reasoning)
+    logger.debug("Program: %s", result.program)
 
     return result.program + "\n"
 
 
-handler = Mangum(app)
+def handler(event, context) -> dict:
+    logger.debug(json.dumps(event))
+    function = Mangum(app)
+    return function(event, context)

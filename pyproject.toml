@@ -5,17 +5,17 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "aws-lambda-powertools[tracer]>=3.6.0",
     "fastapi>=0.115.8",
+    "hishel[s3]>=0.1.1",
     "mangum>=0.19.0",
     "openai>=1.63.2",
     "pydantic-settings>=2.7.1",
     "python-multipart>=0.0.20",
+    "types-boto3[dynamodb]>=1.36.24",
 ]
 
 [dependency-groups]
 dev = [
-    "aws-cdk-aws-lambda-python-alpha>=2.179.0a0",
     "aws-cdk-lib>=2.179.0",
     "ruff>=0.9.6",
     "uvicorn>=0.34.0",
