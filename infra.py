@@ -9,6 +9,7 @@ from aws_cdk import (
     aws_apigateway as apigateway,
     aws_s3 as s3,
     aws_iam as iam,
+    aws_certificatemanager as acm,
 )
 
 
@@ -73,6 +74,18 @@ class QSH(Stack):
         )
 
         api.root.add_method("POST")
+
+        domain = api.add_domain_name(
+            "qsh-domain",
+            domain_name="qsh.jmeyer.dev",
+            endpoint_type=apigateway.EndpointType.EDGE,
+            certificate=acm.Certificate(
+                self,
+                "qsh-certificate",
+                domain_name="qsh.jmeyer.dev",
+                validation=acm.CertificateValidation.from_dns(),
+            ),
+        )
 
 
 app = App()
