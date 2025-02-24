@@ -15,7 +15,7 @@ from pydantic_settings import BaseSettings
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-app = FastAPI(title="qsh", root_path="/prod")
+app = FastAPI(title="qsh", root_path="/v0")
 
 
 class Config(BaseSettings):
