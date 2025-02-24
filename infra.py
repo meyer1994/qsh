@@ -123,6 +123,10 @@ class QSH(Stack):
 
         api.root.add_method("POST")
 
+        api.root.add_resource("docs").add_method("GET")
+        api.root.add_resource("redoc").add_method("GET")
+        api.root.add_resource("openapi.json").add_method("GET")
+
         domain = api.add_domain_name(
             "qsh-domain",
             domain_name="qsh.jmeyer.dev",
