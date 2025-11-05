@@ -30,8 +30,8 @@ package.zip: requirements.txt
 
 
 deploy: package.zip
-	npx aws-cdk deploy --verbose
+	pnpx aws-cdk deploy --verbose
 
 
 destroy: package.zip
-	npx aws-cdk destroy --verbose --force --all
+	pnpx aws-cdk destroy --verbose --force --all

@@ -2,15 +2,27 @@ import os
 
 from aws_cdk import (
     App,
+    Duration,
     RemovalPolicy,
     Stack,
-    Duration,
-    aws_lambda as lambda_,
+)
+from aws_cdk import (
     aws_apigateway as apigateway,
-    aws_s3 as s3,
-    aws_iam as iam,
+)
+from aws_cdk import (
     aws_certificatemanager as acm,
+)
+from aws_cdk import (
+    aws_iam as iam,
+)
+from aws_cdk import (
+    aws_lambda as lambda_,
+)
+from aws_cdk import (
     aws_logs as logs,
+)
+from aws_cdk import (
+    aws_s3 as s3,
 )
 
 
@@ -57,6 +69,7 @@ class QSH(Stack):
             # environment
             environment={
                 "OPENAI_API_KEY": os.environ["OPENAI_API_KEY"],
+                "ANTHROPIC_API_KEY": os.environ["ANTHROPIC_API_KEY"],
                 "S3_BUCKET_NAME": bucket.bucket_name,
             },
             # policies

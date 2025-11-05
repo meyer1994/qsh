@@ -16,13 +16,13 @@ class TestHandler(unittest.IsolatedAsyncioTestCase):
         handler.Mangum.assert_called_once_with(handler.app)
 
     @patch("handler.hishel.AsyncS3Storage", autospec=True)
-    async def test_dep_openai(self, *args):
+    async def test_dep_llm(self, *args):
         cfg = MagicMock()
         cfg.S3_BUCKET_NAME = "test-bucket"
         cfg.OPENAI_API_KEY = "test-api-key"
 
-        async for openai in handler.dep_openai(cfg):
-            self.assertEqual(openai.api_key, cfg.OPENAI_API_KEY)
+        async for llm in handler.dep_llm(cfg):
+            self.assertEqual(llm.model_name, "gpt-4o-mini")
 
         handler.hishel.AsyncS3Storage.assert_called_once_with(
             bucket_name=cfg.S3_BUCKET_NAME,
@@ -30,37 +30,39 @@ class TestHandler(unittest.IsolatedAsyncioTestCase):
 
     async def test_post_with_system_prompt(self, *args):
         ctx = MagicMock()
-        ctx.openai = AsyncMock()
+        ctx.llm = AsyncMock()
         ctx.user = b"Generate a simple hello world program."
         ctx.system = b"Provide a Python program."
 
+        structured = ctx.llm.with_structured_output.return_value
+        structured.ainvoke.return_value = handler.Result(
+            reasoning="short reasoning",
+            program="print('hello')",
+        )
+
         await handler.post(ctx)
 
-        ctx.openai.beta.chat.completions.parse.assert_awaited_once_with(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "Provide a Python program."},
-                {"role": "user", "content": "Generate a simple hello world program."},
-            ],
-            max_tokens=1024,
-            temperature=0.5,
-            response_format=handler.Result,
-        )
+        ctx.llm.with_structured_output.assert_called_once_with(handler.Result)
+        structured.ainvoke.assert_awaited_once_with([
+            handler.SystemMessage(content="Provide a Python program."),
+            handler.HumanMessage(content="Generate a simple hello world program."),
+        ])
 
     async def test_post_without_system_prompt(self, *args):
         ctx = MagicMock()
-        ctx.openai = AsyncMock()
+        ctx.llm = AsyncMock()
         ctx.user = b"Generate a simple hello world program."
         ctx.system = b"@@@@"
 
+        structured = ctx.llm.with_structured_output.return_value
+        structured.ainvoke.return_value = handler.Result(
+            reasoning="short reasoning",
+            program="print('hello')",
+        )
+
         await handler.post(ctx)
 
-        ctx.openai.beta.chat.completions.parse.assert_awaited_once_with(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": "Generate a simple hello world program."},
-            ],
-            max_tokens=1024,
-            temperature=0.5,
-            response_format=handler.Result,
-        )
+        ctx.llm.with_structured_output.assert_called_once_with(handler.Result)
+        structured.ainvoke.assert_awaited_once_with([
+            handler.HumanMessage(content="Generate a simple hello world program."),
+        ])
