@@ -70,8 +70,8 @@ class Context:
     cfg: Annotated[Config, Depends(dep_config)]
 
     # data
-    user: Annotated[bytes, File(alias="u", min_length=4, max_length=1024)]
-    system: Annotated[bytes, File(alias="s", min_length=4, max_length=1024)] = SENTINEL
+    user: Annotated[bytes, File(alias="u", min_length=4, max_length=1024 * 10)]
+    system: Annotated[bytes, File(alias="s", min_length=4, max_length=1024 * 10)] = SENTINEL
 
     # configs
     model: Annotated[Models, Query(alias="m")] = Models.GPT_4_1_MINI
@@ -91,7 +91,7 @@ async def post(ctx: Annotated[Context, Depends(Context)]) -> str:
     llm = init_chat_model(
         model=ctx.model.value,
         temperature=ctx.temperature,
-        max_tokens=1024,
+        max_tokens=1024 * 10,
     )
 
     prompt_user = ctx.user.decode()

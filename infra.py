@@ -54,7 +54,7 @@ class QSH(Stack):
             # runtime
             memory_size=128,
             runtime=lambda_.Runtime.PYTHON_3_13,
-            timeout=Duration.seconds(15),
+            timeout=Duration.seconds(120),
             # debugging
             profiling=True,
             tracing=lambda_.Tracing.ACTIVE,
